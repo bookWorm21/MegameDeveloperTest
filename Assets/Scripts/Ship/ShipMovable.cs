@@ -18,15 +18,11 @@ namespace Assets.Scripts.Ship
         [SerializeField] private Transform _head;
         [SerializeField] private Transform _root;
 
-        private IShipInputting _inputting;
+        private ShipInputting _inputting;
 
         private Vector3 _currentVelocity;
-        private Vector3 _currentDirection;
 
-        private void OnEnable()
-        {
-            _currentInput.ChangedInputing += OnChangeInputting;
-        }
+        public Vector3 CurrentDirection { get; private set; }
 
         private void Start()
         {
@@ -37,23 +33,19 @@ namespace Assets.Scripts.Ship
         {
             transform.eulerAngles += _rotationDirection * _rotationSpeed * _inputting.Rotation() * Time.deltaTime;
 
-            _currentDirection = (_head.position - _root.position).normalized;
-            _currentVelocity += Time.deltaTime * _currentDirection * (_inputting.NeedBoost() ? _acceleration : 0);
+            CurrentDirection = (_head.position - _root.position).normalized;
+            _currentVelocity += Time.deltaTime * CurrentDirection * (_inputting.NeedBoost() ? _acceleration : 0);
             if (_currentVelocity.magnitude > 0)
             {
-                //_currentVelocity -= Time.deltaTime * _currentVelocity * _airDrag;
+                _currentVelocity -= Time.deltaTime * _currentVelocity * _airDrag;
                 _currentVelocity = Vector3.ClampMagnitude(_currentVelocity, _maxSpeed);
             }
+
             transform.position = Vector3.MoveTowards(transform.position, transform.position + _currentVelocity,
-                                                     Time.deltaTime);
+                                                     Time.deltaTime * _currentVelocity.magnitude);
         }
 
-        private void OnDisable()
-        {
-            _currentInput.ChangedInputing -= OnChangeInputting;    
-        }
-
-        private void OnChangeInputting(IShipInputting inputting)
+        public void SetInputting(ShipInputting inputting)
         {
             _inputting = inputting;
         }
