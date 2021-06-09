@@ -7,7 +7,7 @@ namespace Assets.Scripts.Ship
 {
     public class ShipMovable : MonoBehaviour
     {
-        [SerializeField] private CurrentInput _currentInput;
+        [SerializeField] private CurrentInputSource _currentInput;
 
         [SerializeField] private Vector3 _rotationDirection;
         [SerializeField] private float _maxSpeed;

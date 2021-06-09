@@ -9,7 +9,7 @@ namespace Assets.Scripts.Ship
     {
         [SerializeField] private int _bulletsPerSecond;
         [SerializeField] private ShipMovable _shitMovable;
-        [SerializeField] private CurrentInput _currentInput;
+        [SerializeField] private CurrentInputSource _currentInput;
 
         private ShipInputting _inputting;
         private float _rechargeTime;

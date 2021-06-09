@@ -9,7 +9,7 @@ namespace Assets.Scripts.Ship
     {
         [SerializeField] private ShipShooting _shipShooting;
         [SerializeField] private ShipMovable _shipMovable;
-        [SerializeField] private CurrentInput _currentInput;
+        [SerializeField] private CurrentInputSource _currentInput;
 
         private void OnEnable()
         {
