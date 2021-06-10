@@ -8,7 +8,8 @@ namespace Assets.Scripts
     {
         [SerializeField] private float _speed;
         [SerializeField] private int _damage;
-        [SerializeField] private float _maxFlyingDistance;
+
+        private float _maxFlyingDistance;
 
         private Shooting _parent;
         private Vector3 _moveDirection;
@@ -17,6 +18,7 @@ namespace Assets.Scripts
 
         private void Start()
         {
+            _maxFlyingDistance = GameMap.MapWight;
             _liveTime = _maxFlyingDistance / _speed;
         }
 

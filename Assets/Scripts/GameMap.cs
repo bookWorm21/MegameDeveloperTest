@@ -7,13 +7,16 @@ namespace Assets.Scripts
     [RequireComponent(typeof(BoxCollider))]
     public class GameMap : MonoBehaviour
     {
+        public static float MapWight;
+        public static float MapHeight;
+
         private BoxCollider _collider;
         private Camera _camera;
 
-        private float _maxWight;
-        private float _minWight;
-        private float _maxHeight;
-        private float _minHeight;
+        public static float MaxWight { get; private set; }
+        public static float MinWight { get; private set; }
+        public static float MaxHeight { get; private set; }
+        public static float MinHeight { get; private set; }
 
         private void Start()
         {
@@ -23,11 +26,14 @@ namespace Assets.Scripts
             Vector3 leftBottomPoint = _camera.ScreenToWorldPoint(new Vector3(0, 0, 0));
             Vector3 rightBottomPoint = _camera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
 
-            _maxWight = rightBottomPoint.x;
-            _minWight = leftBottomPoint.x;
+            MaxWight = rightBottomPoint.x;
+            MinWight = leftBottomPoint.x;
 
-            _maxHeight = rightBottomPoint.y;
-            _minHeight = leftBottomPoint.y;
+            MaxHeight = rightBottomPoint.y;
+            MinHeight = leftBottomPoint.y;
+
+            MapWight = MaxWight - MinWight;
+            MapHeight = MaxHeight - MinHeight;
 
             _collider.size = new Vector3(
                 (rightBottomPoint.x - leftBottomPoint.x),
@@ -39,22 +45,22 @@ namespace Assets.Scripts
         {
             Vector3 position = other.transform.position;
 
-            if(position.x >= _maxWight)
+            if(position.x >= MaxWight)
             {
-                position.x = _minWight + 0.1f;
+                position.x = MinWight + 0.1f;
             }
-            else if(position.x <= _minWight)
+            else if(position.x <= MinWight)
             {
-                position.x = _maxWight - 0.1f;
+                position.x = MaxWight - 0.1f;
             }
 
-            if(position.y >= _maxHeight)
+            if(position.y >= MaxHeight)
             {
-                position.y = _minHeight + 0.1f;
+                position.y = MinHeight + 0.1f;
             }
-            else if(position.y <= _minHeight)
+            else if(position.y <= MinHeight)
             {
-                position.y = _maxHeight - 0.1f;
+                position.y = MaxHeight - 0.1f;
             }
 
             other.transform.position = position;
