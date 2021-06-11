@@ -31,8 +31,8 @@ namespace Assets.Scripts.Spawning
 
                     Vector3 rotation = new Vector3(0, 0, Random.Range(0, 361));
 
-                    position.x = Mathf.Clamp(position.x, GameMap.MinWight, GameMap.MaxWight);
-                    position.y = Mathf.Clamp(position.y, GameMap.MinHeight, GameMap.MaxHeight);
+                    position.x = Mathf.Clamp(position.x, GameMap.MinX, GameMap.MaxX);
+                    position.y = Mathf.Clamp(position.y, GameMap.MinY, GameMap.MaxY);
 
                     asteroid.gameObject.transform.position = position;
                     asteroid.gameObject.transform.eulerAngles = rotation;

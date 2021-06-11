@@ -42,7 +42,7 @@ namespace Assets.Scripts.Ship
             }
 
             transform.position = Vector3.MoveTowards(transform.position, transform.position + _currentVelocity,
-                                                     Time.deltaTime * _currentVelocity.magnitude);
+                                                    Time.deltaTime * _currentVelocity.magnitude);
         }
 
         public void SetInputting(ShipInputting inputting)

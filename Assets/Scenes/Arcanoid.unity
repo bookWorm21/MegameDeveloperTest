@@ -204,9 +204,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentInput: {fileID: 1240391521}
   _rotationDirection: {x: 0, y: 0, z: -1}
-  _maxSpeed: 30
-  _rotationSpeed: 180
-  _acceleration: 12
+  _maxSpeed: 25
+  _rotationSpeed: 220
+  _acceleration: 10
   _airDrag: 1.5
   _head: {fileID: 1378107447}
   _root: {fileID: 1544516665}
@@ -1378,8 +1378,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inputtings:
-  - {fileID: 1240391520}
   - {fileID: 1240391522}
+  - {fileID: 1240391520}
 --- !u!114 &1240391522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2011,6 +2011,53 @@ Transform:
   m_Father: {fileID: 226131616}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1640295145
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1640295147}
+  - component: {fileID: 1640295146}
+  m_Layer: 0
+  m_Name: SaucerSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1640295146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640295145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d01230984a575e64aad8ec5d8d63dbf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _offsetToScreenBorder: 20
+  _minTimeSpawnDelay: 0
+  _maxTimeSpawnDelay: 0
+  _saucerPrefab: {fileID: 1096409225422203928, guid: 1d9f3df3f841cbf49b509855b2cf86a4, type: 3}
+--- !u!4 &1640295147
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640295145}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1784544743
 GameObject:
   m_ObjectHideFlags: 0
@@ -2057,7 +2104,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1792889671
 GameObject:
@@ -2133,7 +2180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pool: {fileID: 1223858644}
-  _minDistanceFromPlayer: 1.5
+  _minDistanceFromPlayer: 2
   _ship: {fileID: 226131621}
 --- !u!1 &1896572848
 GameObject:

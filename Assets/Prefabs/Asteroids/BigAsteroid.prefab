@@ -126,7 +126,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71b51e1a0eafcd94b81795f39526c7e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pointForDie: 0
+  _childDeltaMoveDirection: 45
+  _pointForDie: 20
   _childCount: 2
   _minSpeed: 2
-  _maxSpeed: 7
+  _maxSpeed: 3
+  _damage: 0

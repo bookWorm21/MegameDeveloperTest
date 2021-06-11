@@ -30,7 +30,7 @@ namespace Assets.Scripts.Ship
 
         public void ApplyDamage(int damage)
         {
-            throw new System.NotImplementedException();
+            
         }
     }
 }
