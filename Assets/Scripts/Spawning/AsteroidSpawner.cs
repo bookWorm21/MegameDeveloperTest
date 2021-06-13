@@ -37,7 +37,7 @@ namespace Assets.Scripts.Spawning
                     asteroid.gameObject.transform.position = position;
                     asteroid.gameObject.transform.eulerAngles = rotation;
                     asteroid.gameObject.SetActive(true);
-                    asteroid.Activate(true);
+                    asteroid.Activate();
                 }
             }
         }

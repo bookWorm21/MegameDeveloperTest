@@ -127,8 +127,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _childDeltaMoveDirection: 45
-  _pointForDie: 100
+  _pointForKill: 100
   _childCount: 0
   _minSpeed: 2
   _maxSpeed: 3
-  _damage: 0
+  _damage: 1

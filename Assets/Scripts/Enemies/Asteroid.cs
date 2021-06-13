@@ -22,8 +22,6 @@ namespace Assets.Scripts.Enemies
         private float _currentSpeed;
         private int _destroedChilds = 0;
 
-        private bool _isMainPart;
-
         private static Vector3 _horizontal = new Vector3(1, 0, 0);
 
         public bool IsActive { get; private set; }
@@ -32,11 +30,7 @@ namespace Assets.Scripts.Enemies
 
         public int ChildCount => _childCount;
 
-        /// <summary>
-        /// event triggers when asteriod destroy
-        /// paramert shows whether the entire asteriod was destroyed along with its descendants
-        /// </summary>
-        public event System.Action<bool> Destroed;
+        public event System.Action Destroed;
 
         private void Update()
         {
@@ -53,10 +47,9 @@ namespace Assets.Scripts.Enemies
             }
         }
 
-        public void Activate(bool isMainPart)
+        public void Activate()
         {
             _destroedChilds = 0;
-            _isMainPart = isMainPart;
             IsActive = true;
 
             float directionX = Random.Range(-1.0f, 1.0f);
@@ -76,10 +69,9 @@ namespace Assets.Scripts.Enemies
             _currentSpeed = Random.Range(_minSpeed, _maxSpeed);
         }
 
-        public void Activate(bool isMainPart, Vector3 direction, float speed)
+        public void Activate(Vector3 direction, float speed)
         {
             _destroedChilds = 0;
-            _isMainPart = isMainPart;
             IsActive = true;
             _moveDirection = direction;
             _currentSpeed = speed;
@@ -114,7 +106,7 @@ namespace Assets.Scripts.Enemies
             for(int i = 0; i < _childCount; i++, leftBorder += deltaAngle)
             {
                 childMoveDirection = new Vector3(Mathf.Cos(leftBorder), Mathf.Sin(leftBorder), 0);
-                _childs[i].Activate(false, childMoveDirection, childSpeed);
+                _childs[i].Activate(childMoveDirection, childSpeed);
                 _childs[i].gameObject.transform.position = transform.position;
                 _childs[i].gameObject.transform.rotation = transform.rotation;
                 _childs[i].gameObject.SetActive(true);
@@ -123,11 +115,11 @@ namespace Assets.Scripts.Enemies
             gameObject.SetActive(false);
             if(_childCount == 0)
             {
-                Destroed?.Invoke(_isMainPart);
+                Destroed?.Invoke();
             }
         }
 
-        private void OnChildDestroy(bool destroedRoot)
+        private void OnChildDestroy()
         {
             _destroedChilds++;
             if(_destroedChilds >= _childCount)
@@ -135,7 +127,7 @@ namespace Assets.Scripts.Enemies
                 gameObject.SetActive(false);
                 IsActive = false;
                 _destroedChilds = 0;
-                Destroed?.Invoke(_isMainPart);
+                Destroed?.Invoke();
             }
         }
 
@@ -144,7 +136,7 @@ namespace Assets.Scripts.Enemies
             gameObject.SetActive(false);
             IsActive = false;
             _destroedChilds = 0;
-            Destroed?.Invoke(_isMainPart);
+            Destroed?.Invoke();
 
             if (collision.gameObject.TryGetComponent(out Ship.Ship ship))
             {

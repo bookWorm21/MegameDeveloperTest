@@ -40,17 +40,14 @@ namespace Assets.Scripts.Spawning
             }
         }
 
-        private void OnAsteroidDestroy(bool destroedRoot)
+        private void OnAsteroidDestroy()
         {
-            if(destroedRoot)
+            _currentDestroedAsteriod++;
+            if (_currentDestroedAsteriod == _currentAsteroidCount)
             {
-                _currentDestroedAsteriod++;
-                if(_currentDestroedAsteriod == _currentAsteroidCount)
-                {
-                    _currentDestroedAsteriod = 0;
-                    _currentAsteroidCount += _deltaAsteroidsBetweenLevel;
-                    StartCoroutine(SpawnAsteroidWithDelay());
-                }
+                _currentDestroedAsteriod = 0;
+                _currentAsteroidCount += _deltaAsteroidsBetweenLevel;
+                StartCoroutine(SpawnAsteroidWithDelay());
             }
         }
 

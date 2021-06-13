@@ -24,13 +24,30 @@ namespace Assets.Scripts
                 return;
             }
 
+            for(int i = 0; i < _inputtings.Length; i++)
+            {
+                _inputtings[i].enabled = false;
+            }
+
             _currentInputtingIndex = 0;
             _currentInputting = _inputtings[_currentInputtingIndex];
+            EnableInput();
             ChangedInputing?.Invoke(_currentInputting);
+        }
+
+        public void EnableInput()
+        {
+            _inputtings[_currentInputtingIndex].enabled = true;
+        }
+
+        public void DisableInput()
+        {
+            _inputtings[_currentInputtingIndex].enabled = false;
         }
 
         public void ChangeInputting()
         {
+            _inputtings[_currentInputtingIndex].enabled = false;
             _currentInputtingIndex++;
             if(_currentInputtingIndex >= _inputtings.Length)
             {
@@ -38,6 +55,7 @@ namespace Assets.Scripts
             }
 
             _currentInputting = _inputtings[_currentInputtingIndex];
+            _inputtings[_currentInputtingIndex].enabled = true;
             ChangedInputing?.Invoke(_currentInputting);
         }
     }

@@ -36,9 +36,9 @@ namespace Assets.Scripts
             MapHeight = MaxY - MinY;
 
             _collider.size = new Vector3(
-                (rightBottomPoint.x - leftBottomPoint.x),
-                (rightBottomPoint.y - leftBottomPoint.y),
-                1);
+                (rightBottomPoint.x - leftBottomPoint.x) + 1,
+                (rightBottomPoint.y - leftBottomPoint.y) + 1,
+                2);
         }
 
         private void OnTriggerExit(Collider other)

@@ -1,3 +1,4 @@
+using Assets.Scripts.Enemies;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Assets.Scripts.Spawning
         [SerializeField] private float _maxTimeSpawnDelay;
 
         [SerializeField] private FlyingSaucer _saucerPrefab;
+        [SerializeField] private Ship.Ship _ship;
 
         private FlyingSaucer _saucerInScene;
 
@@ -20,6 +22,7 @@ namespace Assets.Scripts.Spawning
         {
             _saucerInScene = Instantiate(_saucerPrefab);
             _saucerInScene.gameObject.SetActive(false);
+            _saucerInScene.SetShip(_ship);
             StartCoroutine(Spawn());
         }
 
