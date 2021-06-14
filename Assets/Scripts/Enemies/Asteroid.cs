@@ -30,7 +30,12 @@ namespace Assets.Scripts.Enemies
 
         public int ChildCount => _childCount;
 
-        public event System.Action Destroed;
+        /// <summary>
+        /// event trigg when asteriod or his childs destroed
+        /// parametr type int show how many points will get player
+        /// parametr type bool is show all childs destroed
+        /// </summary>
+        public event System.Action<int, bool> PartDestroed;
 
         private void Update()
         {
@@ -43,7 +48,7 @@ namespace Assets.Scripts.Enemies
             _childs = childs;
             foreach(var child in childs)
             {
-                child.Destroed += OnChildDestroy;
+                child.PartDestroed += OnChildDestroy;
             }
         }
 
@@ -79,6 +84,18 @@ namespace Assets.Scripts.Enemies
 
         public void ApplyDamage(int damage)
         {
+            gameObject.SetActive(false);
+
+            if (_childCount == 0)
+            {
+                PartDestroed?.Invoke(_pointForKill, true);
+                return;
+            }
+            else
+            {
+                PartDestroed?.Invoke(_pointForKill, false);
+            }
+
             float baseAngle = Vector3.Angle(_horizontal, _moveDirection);
             Vector3 childMoveDirection;
 
@@ -111,23 +128,21 @@ namespace Assets.Scripts.Enemies
                 _childs[i].gameObject.transform.rotation = transform.rotation;
                 _childs[i].gameObject.SetActive(true);
             }
-
-            gameObject.SetActive(false);
-            if(_childCount == 0)
-            {
-                Destroed?.Invoke();
-            }
         }
 
-        private void OnChildDestroy()
+        private void OnChildDestroy(int points, bool isFullDestroy)
         {
-            _destroedChilds++;
-            if(_destroedChilds >= _childCount)
+            PartDestroed?.Invoke(points, false);
+            if (isFullDestroy)
             {
-                gameObject.SetActive(false);
-                IsActive = false;
-                _destroedChilds = 0;
-                Destroed?.Invoke();
+                _destroedChilds++;
+                if (_destroedChilds >= _childCount)
+                {
+                    gameObject.SetActive(false);
+                    IsActive = false;
+                    _destroedChilds = 0;
+                    PartDestroed?.Invoke(_pointForKill, true);
+                }
             }
         }
 
@@ -136,7 +151,8 @@ namespace Assets.Scripts.Enemies
             gameObject.SetActive(false);
             IsActive = false;
             _destroedChilds = 0;
-            Destroed?.Invoke();
+
+            PartDestroed?.Invoke(_pointForKill, true);
 
             if (collision.gameObject.TryGetComponent(out Ship.Ship ship))
             {

@@ -37,6 +37,8 @@ namespace Assets.Scripts.Ship
             _waitRespawn = new WaitForSeconds(_respawnTime);
             _waitBlink = new WaitForSeconds(1.0f / _blinksPerSecond);
             _blinkCount = (int)(_timeInvulnerabilityAfterDestroy * _blinksPerSecond);
+
+            ChangedHealth?.Invoke(_health);
         }
 
         private void OnDisable()

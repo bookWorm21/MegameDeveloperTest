@@ -9,6 +9,7 @@ namespace Assets.Scripts
     {
         [SerializeField] private Ship.Ship _ship;
         [SerializeField] private GameMenu _gameMenu;
+        [SerializeField] private CurrentInputSource _inputSource;
 
         private void Start()
         {
@@ -16,6 +17,7 @@ namespace Assets.Scripts
             {
                 if(health <= 0)
                 {
+                    _inputSource.DisableInput();
                     _ship.enabled = false;
                     _gameMenu.OnClickOpenMenu(false);
                 }

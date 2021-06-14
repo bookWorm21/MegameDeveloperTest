@@ -18,6 +18,8 @@ namespace Assets.Scripts.Ship
         [SerializeField] private Transform _head;
         [SerializeField] private Transform _root;
 
+        [SerializeField] private AudioSource _accelerationSource;
+
         private ShipInputting _inputting;
 
         private Vector3 _currentVelocity;
@@ -35,6 +37,11 @@ namespace Assets.Scripts.Ship
 
             CurrentDirection = (_head.position - _root.position).normalized;
             _currentVelocity += Time.deltaTime * CurrentDirection * (_inputting.NeedBoost() ? _acceleration : 0);
+
+            if(_inputting.NeedBoost())
+                if(!_accelerationSource.isPlaying)
+                    _accelerationSource.Play();
+
             if (_currentVelocity.magnitude > 0)
             {
                 _currentVelocity -= Time.deltaTime * _currentVelocity * _airDrag;

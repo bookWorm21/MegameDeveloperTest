@@ -21,6 +21,10 @@ namespace Assets.Scripts.Enemies
 
         public int PointForKill => _pointForKill;
 
+        /// <summary>
+        /// event trigg when saucer destroy
+        /// parametr type int show how many points will get player
+        /// </summary>
         public event System.Action<int> Destroed;
 
         private void Start()

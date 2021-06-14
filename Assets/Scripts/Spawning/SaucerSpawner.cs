@@ -18,9 +18,14 @@ namespace Assets.Scripts.Spawning
 
         private FlyingSaucer _saucerInScene;
 
+        public event System.Action<int> SaucerDestroed;
+
         private void Awake()
         {
             _saucerInScene = Instantiate(_saucerPrefab);
+
+            _saucerInScene.Destroed += (int points) => SaucerDestroed?.Invoke(points);
+
             _saucerInScene.gameObject.SetActive(false);
             _saucerInScene.SetShip(_ship);
             StartCoroutine(Spawn());

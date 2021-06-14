@@ -8,6 +8,7 @@ namespace Assets.Scripts.Spawning
     {
         [SerializeField] private AsteroidPool _asteroidPool;
         [SerializeField] private AsteroidSpawner _asteroidSpawner;
+        [SerializeField] private SaucerSpawner _saucerSpawner;
         [Min(1)]
         [SerializeField] private int _startAsteroidCount;
         [Min(1)]
@@ -18,6 +19,10 @@ namespace Assets.Scripts.Spawning
         private int _currentDestroedAsteriod = 0; 
         private WaitForSeconds _delay;
 
+        private int _points = 0;
+
+        public event System.Action<int> ChangedPoints;
+
         private void Start()
         {
             _currentAsteroidCount = _startAsteroidCount;
@@ -26,9 +31,12 @@ namespace Assets.Scripts.Spawning
 
             for (int i = 0; i < _asteroidPool.GetAsteroidsSize; i++)
             {
-                _asteroidPool.GetAsteroid(i).Destroed += OnAsteroidDestroy;
+                _asteroidPool.GetAsteroid(i).PartDestroed += OnAsteroidDestroy;
             }
 
+            _saucerSpawner.SaucerDestroed += OnSaucerDestroed;
+
+            ChangedPoints?.Invoke(_points);
             StartCoroutine(SpawnAsteroidWithDelay());
         }
 
@@ -36,18 +44,32 @@ namespace Assets.Scripts.Spawning
         {
             for (int i = 0; i < _asteroidPool.GetAsteroidsSize; i++)
             {
-                _asteroidPool.GetAsteroid(i).Destroed -= OnAsteroidDestroy;
+                _asteroidPool.GetAsteroid(i).PartDestroed -= OnAsteroidDestroy;
             }
+
+            _saucerSpawner.SaucerDestroed -= OnSaucerDestroed;
         }
 
-        private void OnAsteroidDestroy()
+        private void OnSaucerDestroed(int points)
         {
-            _currentDestroedAsteriod++;
-            if (_currentDestroedAsteriod == _currentAsteroidCount)
+            _points += points;
+            ChangedPoints?.Invoke(_points);
+        }
+
+        private void OnAsteroidDestroy(int points, bool isFullRoot)
+        {
+            _points += points;
+            ChangedPoints?.Invoke(_points);
+
+            if (isFullRoot)
             {
-                _currentDestroedAsteriod = 0;
-                _currentAsteroidCount += _deltaAsteroidsBetweenLevel;
-                StartCoroutine(SpawnAsteroidWithDelay());
+                _currentDestroedAsteriod++;
+                if (_currentDestroedAsteriod == _currentAsteroidCount)
+                {
+                    _currentDestroedAsteriod = 0;
+                    _currentAsteroidCount += _deltaAsteroidsBetweenLevel;
+                    StartCoroutine(SpawnAsteroidWithDelay());
+                }
             }
         }
 

@@ -10,6 +10,7 @@ namespace Assets.Scripts.Ship
         [SerializeField] private int _bulletsPerSecond;
         [SerializeField] private ShipMovable _shitMovable;
         [SerializeField] private CurrentInputSource _currentInput;
+        [SerializeField] private AudioSource _shootingAudio;
 
         private ShipInputting _inputting;
         private float _rechargeTime;
@@ -27,6 +28,7 @@ namespace Assets.Scripts.Ship
             if(_inputting.NeedShoot() && _elapsedRechargeTime < 0)
             {
                 _elapsedRechargeTime = _rechargeTime;
+                _shootingAudio.Play();
                 Shoot(_shitMovable.CurrentDirection);
             }
         }
