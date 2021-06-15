@@ -17,56 +17,67 @@ namespace Assets.Scripts.Spawning
         [SerializeField] private Asteroid _smallAsteroidPrefab;
         [SerializeField] private int _capacity;
 
-        private Asteroid[] _asteroids;
+        private Queue<Asteroid> _asteroidQueue = new Queue<Asteroid>();
 
-        public int GetAsteroidsSize => _asteroids.Length;
-
-        public Asteroid GetAsteroid(int index)
-        {
-            if(index < 0 && index >= _asteroids.Length)
-            {
-                Debug.LogError("Попытка передать индекс, который выходит за пределы массива");
-                return null; 
-            }
-
-            return _asteroids[index];
-        }
+        public event System.Action<Asteroid> CreatedAsteroid;
 
         public void Initialize()
         {
-            _asteroids = new Asteroid[_capacity];
-
             for(int i = 0; i < _capacity; i++)
             {
-                Asteroid big = Instantiate(_bigAsteroidPrefab, _containerForBig);
-                _asteroids[i] = big;
-                Asteroid[] bigChilds = new Asteroid[big.ChildCount];
-
-                for (int j = 0; j < big.ChildCount; j++)
-                {
-                    Asteroid medium = Instantiate(_mediumAsteroidPrefab, _containterForMedium);
-                    bigChilds[j] = medium;
-                    Asteroid[] mediumChilds = new Asteroid[medium.ChildCount];
-
-                    for(int k = 0; k < medium.ChildCount; k++)
-                    {
-                        mediumChilds[k] = Instantiate(_smallAsteroidPrefab, _containerForSmall);
-                        mediumChilds[k].gameObject.SetActive(false);
-                    }
-
-                    medium.gameObject.SetActive(false);
-                    medium.SetChilds(mediumChilds);
-                }
-
-                big.gameObject.SetActive(false);
-                big.SetChilds(bigChilds);
+                Asteroid current = InitAsteroid();
+                current.FullDestroed += OnAsteroidDestroed;
+                CreatedAsteroid?.Invoke(current);
+                _asteroidQueue.Enqueue(current);
             }
         }
 
         public bool TryGetAsteroid(out Asteroid asteroid)
         {
-            asteroid = _asteroids.FirstOrDefault(p => p.IsActive == false);
+            if (_asteroidQueue.Count > 0)
+            {
+                asteroid = _asteroidQueue.Dequeue();
+            }
+            else
+            {
+                asteroid = InitAsteroid();
+                asteroid.FullDestroed += OnAsteroidDestroed;
+                CreatedAsteroid?.Invoke(asteroid);
+            }
+
             return asteroid != null;
+        }
+
+        private void OnAsteroidDestroed(Asteroid asteroid)
+        {
+            _asteroidQueue.Enqueue(asteroid);
+        }
+
+        private Asteroid InitAsteroid()
+        {
+            Asteroid big = Instantiate(_bigAsteroidPrefab, _containerForBig);
+            Asteroid[] bigChilds = new Asteroid[big.ChildCount];
+
+            for (int j = 0; j < big.ChildCount; j++)
+            {
+                Asteroid medium = Instantiate(_mediumAsteroidPrefab, _containterForMedium);
+                bigChilds[j] = medium;
+                Asteroid[] mediumChilds = new Asteroid[medium.ChildCount];
+
+                for (int k = 0; k < medium.ChildCount; k++)
+                {
+                    mediumChilds[k] = Instantiate(_smallAsteroidPrefab, _containerForSmall);
+                    mediumChilds[k].gameObject.SetActive(false);
+                }
+
+                medium.gameObject.SetActive(false);
+                medium.SetChilds(mediumChilds);
+            }
+
+            big.gameObject.SetActive(false);
+            big.SetChilds(bigChilds);
+            
+            return big;
         }
     }
 }

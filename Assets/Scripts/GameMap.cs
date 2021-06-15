@@ -4,13 +4,17 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    [RequireComponent(typeof(BoxCollider))]
     public class GameMap : MonoBehaviour
     {
+        [SerializeField] private MapBorder _leftBorder;
+        [SerializeField] private MapBorder _rightBorder;
+        [SerializeField] private MapBorder _upBorder;
+        [SerializeField] private MapBorder _downBorder;
+        [SerializeField] private float _borderWight;
+
         public static float MapWight;
         public static float MapHeight;
 
-        private BoxCollider _collider;
         private Camera _camera;
 
         public static float MaxX { get; private set; }
@@ -18,12 +22,19 @@ namespace Assets.Scripts
         public static float MaxY { get; private set; }
         public static float MinY { get; private set; }
 
-        private void Start()
+        private void OnEnable()
         {
-            _camera = Camera.main;
-            _collider = GetComponent<BoxCollider>();
+            _leftBorder.Triggered += OnObjectOutsideMap;
+            _rightBorder.Triggered += OnObjectOutsideMap;
+            _upBorder.Triggered += OnObjectOutsideMap;
+            _downBorder.Triggered += OnObjectOutsideMap;
+        }
 
-            Vector3 leftBottomPoint = _camera.ScreenToWorldPoint(new Vector3(0, 0, 0));
+        private void Awake()
+        { 
+            _camera = Camera.main;
+
+             Vector3 leftBottomPoint = _camera.ScreenToWorldPoint(new Vector3(0, 0, 0));
             Vector3 rightBottomPoint = _camera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
 
             MaxX = rightBottomPoint.x;
@@ -35,17 +46,40 @@ namespace Assets.Scripts
             MapWight = MaxX - MinX;
             MapHeight = MaxY - MinY;
 
-            _collider.size = new Vector3(
-                (rightBottomPoint.x - leftBottomPoint.x) + 1,
-                (rightBottomPoint.y - leftBottomPoint.y) + 1,
-                2);
+            _leftBorder.transform.localScale = new Vector3(_borderWight, MapHeight, 1);
+            _leftBorder.transform.position = new Vector3(MinX - _borderWight / 2, 1, 0);
+
+            _rightBorder.transform.localScale = _leftBorder.transform.localScale;
+            _rightBorder.transform.position = new Vector3(MaxX + _borderWight / 2, 1, 0);
+
+            _upBorder.transform.localScale = new Vector3(MapWight, _borderWight, 1);
+            _upBorder.transform.position = new Vector3(0, MaxY + _borderWight / 2, 0);
+
+            _downBorder.transform.localScale = _upBorder.transform.localScale;
+            _downBorder.transform.position = new Vector3(0, MinY - _borderWight / 2, 0);
         }
 
-        private void OnTriggerExit(Collider other)
+        private void OnDisable()
         {
-            Vector3 position = other.transform.position;
+            _leftBorder.Triggered -= OnObjectOutsideMap;
+            _rightBorder.Triggered -= OnObjectOutsideMap;
+            _upBorder.Triggered -= OnObjectOutsideMap;
+            _downBorder.Triggered -= OnObjectOutsideMap;
+        }
 
-            if(position.x >= MaxX)
+        private void OnObjectOutsideMap(Transform some)
+        {
+            Transform current = some;
+
+            if (some.TryGetComponent(out Enemies.EnemiesHealth asteroid))
+            {
+                current = asteroid.Main;
+            }
+            
+
+            Vector3 position = current.position;
+
+            if (position.x >= MaxX)
             {
                 position.x = MinX + 0.1f;
             }
@@ -63,7 +97,7 @@ namespace Assets.Scripts
                 position.y = MaxY - 0.1f;
             }
 
-            other.transform.position = position;
+            current.position = position;
         }
     }
 }

@@ -1,6 +1,4 @@
 using Assets.Scripts.Enemies;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Spawning

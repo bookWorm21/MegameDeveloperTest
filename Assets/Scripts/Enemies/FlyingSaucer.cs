@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Enemies
 {
-    public class FlyingSaucer : MonoBehaviour, IDamagable
+    public class FlyingSaucer : MonoBehaviour
     {
         [SerializeField] private float _speed;
         [SerializeField] private int _damage;
@@ -13,13 +13,15 @@ namespace Assets.Scripts.Enemies
         [SerializeField] private float _minTimeShootColdown;
         [SerializeField] private float _maxTimeshootColdown;
         [SerializeField] private Shooting _shooting;
+        [SerializeField] private EnemiesHealth _body;
+        [SerializeField] private AudioSource _explosion;
 
         private Vector3 _moveDirection;
         private float _currentShootColdown;
         private float _elapsedTime;
         private Ship.Ship _ship;
 
-        public int PointForKill => _pointForKill;
+        private WaitForSeconds _disactivateWait;
 
         /// <summary>
         /// event trigg when saucer destroy
@@ -30,6 +32,10 @@ namespace Assets.Scripts.Enemies
         private void Start()
         {
             _currentShootColdown = Random.Range(_minTimeShootColdown, _maxTimeshootColdown);
+            _disactivateWait = new WaitForSeconds(_explosion.clip.length);
+
+            _body.Collisied += OnDamage;
+            _body.Damaged += OnDamage;
         }
 
         private void Update()
@@ -55,20 +61,23 @@ namespace Assets.Scripts.Enemies
         {
             _moveDirection = moveDirection;
             gameObject.SetActive(true);
+            _body.gameObject.SetActive(true);
+            enabled = true;
         }
 
-        public void ApplyDamage(int damage)
+        private void OnDamage()
         {
-            Destroed?.Invoke(_pointForKill);
+            _explosion.Play();
+            _body.gameObject.SetActive(false);
+            enabled = false;
+            StartCoroutine(Disactivate());
+        }
+
+        private IEnumerator Disactivate()
+        {
+            yield return _disactivateWait;
             gameObject.SetActive(false);
-        }
-
-        private void OnCollisionEnter(Collision collision)
-        {
-            if(collision.gameObject.TryGetComponent(out Ship.Ship ship))
-            {
-                ship.ApplyDamage(_damage);
-            }
+            Destroed?.Invoke(_pointForKill);
         }
     }
 }

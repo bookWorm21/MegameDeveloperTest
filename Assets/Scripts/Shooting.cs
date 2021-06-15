@@ -1,3 +1,4 @@
+using Assets.Scripts.Spawning;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,11 +9,20 @@ namespace Assets.Scripts
     {
         [SerializeField] private Bullet _bulletPrefab;
         [SerializeField] private Transform _shootPoint;
+        [SerializeField] private BulletPool _bulletPool;
+
+        private void Awake()
+        {
+            _bulletPool.Initialize();
+        }
 
         public void Shoot(Vector3 shootDirection)
         {
-            Bullet bullet = Instantiate(_bulletPrefab, _shootPoint.position, Quaternion.identity);
+            Bullet bullet = _bulletPool.GetBullet();
+            bullet.transform.position = _shootPoint.position;
+            bullet.transform.rotation = Quaternion.identity;
             bullet.Init(this, shootDirection);
+            bullet.gameObject.SetActive(true);
         }
     }
 }

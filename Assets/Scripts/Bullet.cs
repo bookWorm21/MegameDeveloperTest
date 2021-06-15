@@ -16,6 +16,8 @@ namespace Assets.Scripts
         private float _liveTime;
         private float _elapsedTime;
 
+        public event System.Action<Bullet> Destroed;
+
         private void Start()
         {
             _maxFlyingDistance = GameMap.MapWight;
@@ -24,6 +26,7 @@ namespace Assets.Scripts
 
         public void Init(Shooting parent, Vector3 moveDirection)
         {
+            _elapsedTime = 0;
             _parent = parent;
             _moveDirection = moveDirection;
         }
@@ -34,7 +37,8 @@ namespace Assets.Scripts
             if(_elapsedTime > _liveTime)
             {
                 _elapsedTime = 0;
-                Destroy(gameObject);
+                Destroed?.Invoke(this);
+                gameObject.SetActive(false);
             }
 
             transform.position = Vector3.MoveTowards(transform.position, transform.position + _moveDirection,
@@ -50,13 +54,15 @@ namespace Assets.Scripts
                     if(shooting != _parent)
                     {
                         damagable.ApplyDamage(_damage);
-                        Destroy(gameObject);
+                        Destroed?.Invoke(this);
+                        gameObject.SetActive(false);
                     }
                 }
                 else
                 {
                     damagable.ApplyDamage(_damage);
-                    Destroy(gameObject);
+                    Destroed?.Invoke(this);
+                    gameObject.SetActive(false);
                 }
             }
         }

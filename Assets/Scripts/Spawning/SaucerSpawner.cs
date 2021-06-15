@@ -1,6 +1,5 @@
 using Assets.Scripts.Enemies;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Spawning
@@ -13,17 +12,13 @@ namespace Assets.Scripts.Spawning
         [SerializeField] private float _minTimeSpawnDelay;
         [SerializeField] private float _maxTimeSpawnDelay;
 
-        [SerializeField] private FlyingSaucer _saucerPrefab;
         [SerializeField] private Ship.Ship _ship;
-
-        private FlyingSaucer _saucerInScene;
+        [SerializeField] private FlyingSaucer _saucerInScene;
 
         public event System.Action<int> SaucerDestroed;
 
         private void Awake()
         {
-            _saucerInScene = Instantiate(_saucerPrefab);
-
             _saucerInScene.Destroed += (int points) => SaucerDestroed?.Invoke(points);
 
             _saucerInScene.gameObject.SetActive(false);

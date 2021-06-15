@@ -1,5 +1,5 @@
+using Assets.Scripts.Enemies;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Spawning
@@ -25,14 +25,11 @@ namespace Assets.Scripts.Spawning
 
         private void Start()
         {
+            _asteroidPool.CreatedAsteroid += OnCreateAsteroid;
+
             _currentAsteroidCount = _startAsteroidCount;
             _delay = new WaitForSeconds(_delayBetweenSpawnAsteroids);
             _asteroidPool.Initialize();
-
-            for (int i = 0; i < _asteroidPool.GetAsteroidsSize; i++)
-            {
-                _asteroidPool.GetAsteroid(i).PartDestroed += OnAsteroidDestroy;
-            }
 
             _saucerSpawner.SaucerDestroed += OnSaucerDestroed;
 
@@ -42,12 +39,13 @@ namespace Assets.Scripts.Spawning
 
         private void OnDisable()
         {
-            for (int i = 0; i < _asteroidPool.GetAsteroidsSize; i++)
-            {
-                _asteroidPool.GetAsteroid(i).PartDestroed -= OnAsteroidDestroy;
-            }
-
             _saucerSpawner.SaucerDestroed -= OnSaucerDestroed;
+        }
+
+        private void OnCreateAsteroid(Asteroid asteroid)
+        {
+            asteroid.PartDestroed += OnAsteroidPartDestroy;
+            asteroid.FullDestroed += OnAsteroidFullDestroy;
         }
 
         private void OnSaucerDestroed(int points)
@@ -56,20 +54,20 @@ namespace Assets.Scripts.Spawning
             ChangedPoints?.Invoke(_points);
         }
 
-        private void OnAsteroidDestroy(int points, bool isFullRoot)
+        private void OnAsteroidPartDestroy(int points)
         {
             _points += points;
             ChangedPoints?.Invoke(_points);
+        }
 
-            if (isFullRoot)
+        private void OnAsteroidFullDestroy(Asteroid asteroid)
+        {
+            _currentDestroedAsteriod++;
+            if (_currentDestroedAsteriod == _currentAsteroidCount)
             {
-                _currentDestroedAsteriod++;
-                if (_currentDestroedAsteriod == _currentAsteroidCount)
-                {
-                    _currentDestroedAsteriod = 0;
-                    _currentAsteroidCount += _deltaAsteroidsBetweenLevel;
-                    StartCoroutine(SpawnAsteroidWithDelay());
-                }
+                _currentDestroedAsteriod = 0;
+                _currentAsteroidCount += _deltaAsteroidsBetweenLevel;
+                StartCoroutine(SpawnAsteroidWithDelay());
             }
         }
 

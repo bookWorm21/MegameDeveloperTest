@@ -1,14 +1,14 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Enemies
 {
-    public class Asteroid : MonoBehaviour, IDamagable
+    public class Asteroid : MonoBehaviour
     {
         [Header("angle")]
         [SerializeField] private float _childDeltaMoveDirection;
 
+        [Space(5)]
         [SerializeField] private int _pointForKill;
         [SerializeField] private int _childCount;
 
@@ -16,11 +16,16 @@ namespace Assets.Scripts.Enemies
         [SerializeField] private float _maxSpeed;
 
         [SerializeField] private int _damage;
+        [SerializeField] private EnemiesHealth _body;
+
+        [SerializeField] private AudioSource _explosion;
 
         private Vector3 _moveDirection;
         private Asteroid[] _childs;
         private float _currentSpeed;
         private int _destroedChilds = 0;
+
+        private WaitForSeconds _disactivateWait;
 
         private static Vector3 _horizontal = new Vector3(1, 0, 0);
 
@@ -35,7 +40,16 @@ namespace Assets.Scripts.Enemies
         /// parametr type int show how many points will get player
         /// parametr type bool is show all childs destroed
         /// </summary>
-        public event System.Action<int, bool> PartDestroed;
+        public event System.Action<int> PartDestroed;
+
+        public event System.Action<Asteroid> FullDestroed;
+
+        private void Start()
+        {
+            _body.Damaged += OnDamage;
+            _body.Collisied += OnCollisie;
+            _disactivateWait = new WaitForSeconds(_explosion.clip.length);
+        }
 
         private void Update()
         {
@@ -48,12 +62,16 @@ namespace Assets.Scripts.Enemies
             _childs = childs;
             foreach(var child in childs)
             {
-                child.PartDestroed += OnChildDestroy;
+                child.FullDestroed += OnChildDestroy;
+                child.PartDestroed += OnPartDestroy;
             }
         }
 
         public void Activate()
         {
+            _body.gameObject.SetActive(true);
+            enabled = true;
+
             _destroedChilds = 0;
             IsActive = true;
 
@@ -76,24 +94,32 @@ namespace Assets.Scripts.Enemies
 
         public void Activate(Vector3 direction, float speed)
         {
+            _body.gameObject.SetActive(true);
+            enabled = true;
+
             _destroedChilds = 0;
             IsActive = true;
+
             _moveDirection = direction;
             _currentSpeed = speed;
         }
 
-        public void ApplyDamage(int damage)
+        private IEnumerator Disactivate()
         {
+            yield return _disactivateWait;
             gameObject.SetActive(false);
+        }
 
+        private void OnDamage()
+        {
             if (_childCount == 0)
             {
-                PartDestroed?.Invoke(_pointForKill, true);
-                return;
+                PartDestroed?.Invoke(_pointForKill);
+                FullDestroed?.Invoke(this);
             }
             else
             {
-                PartDestroed?.Invoke(_pointForKill, false);
+                PartDestroed?.Invoke(_pointForKill);
             }
 
             float baseAngle = Vector3.Angle(_horizontal, _moveDirection);
@@ -128,40 +154,43 @@ namespace Assets.Scripts.Enemies
                 _childs[i].gameObject.transform.rotation = transform.rotation;
                 _childs[i].gameObject.SetActive(true);
             }
+
+            _explosion.Play();
+            _body.gameObject.SetActive(false);
+            enabled = false;
+            StartCoroutine(Disactivate());
         }
 
-        private void OnChildDestroy(int points, bool isFullDestroy)
+        private void OnPartDestroy(int points)
         {
-            PartDestroed?.Invoke(points, false);
-            if (isFullDestroy)
+            PartDestroed?.Invoke(points);
+        }
+
+        private void OnChildDestroy(Asteroid asteroid)
+        {
+            _destroedChilds++;
+            if (_destroedChilds >= _childCount)
             {
-                _destroedChilds++;
-                if (_destroedChilds >= _childCount)
-                {
-                    gameObject.SetActive(false);
-                    IsActive = false;
-                    _destroedChilds = 0;
-                    PartDestroed?.Invoke(_pointForKill, true);
-                }
+                gameObject.SetActive(false);
+                IsActive = false;
+                _destroedChilds = 0;
+                FullDestroed?.Invoke(this);
             }
         }
 
-        private void OnCollisionEnter(Collision collision)
+        private void OnCollisie()
         {
-            gameObject.SetActive(false);
+            _explosion.Play();
+            _body.gameObject.SetActive(false);
+            enabled = false;
+
             IsActive = false;
             _destroedChilds = 0;
 
-            PartDestroed?.Invoke(_pointForKill, true);
+            PartDestroed?.Invoke(_pointForKill);
+            FullDestroed?.Invoke(this);
 
-            if (collision.gameObject.TryGetComponent(out Ship.Ship ship))
-            {
-                ship.ApplyDamage(_damage);
-            }
-            else if (collision.gameObject.TryGetComponent(out FlyingSaucer saucer))
-            {
-                saucer.ApplyDamage(_damage);
-            }
+            StartCoroutine(Disactivate());
         }
     }
 }

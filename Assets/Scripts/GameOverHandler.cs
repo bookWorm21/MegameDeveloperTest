@@ -18,7 +18,7 @@ namespace Assets.Scripts
                 if(health <= 0)
                 {
                     _inputSource.DisableInput();
-                    _ship.enabled = false;
+                    _ship.gameObject.SetActive(false);
                     _gameMenu.OnClickOpenMenu(false);
                 }
             };
