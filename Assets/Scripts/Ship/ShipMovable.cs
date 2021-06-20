@@ -11,6 +11,7 @@ namespace Assets.Scripts.Ship
         [SerializeField] private float _maxSpeed;
         [SerializeField] private float _rotationSpeed;
         [SerializeField] private float _acceleration;
+        [SerializeField] private bool _useAirDrag;
         [SerializeField] private float _airDrag;
 
         [SerializeField] private Transform _head;
@@ -42,7 +43,9 @@ namespace Assets.Scripts.Ship
 
             if (_currentVelocity.magnitude > 0)
             {
-                _currentVelocity -= Time.deltaTime * _currentVelocity * _airDrag;
+                if(_useAirDrag)
+                    _currentVelocity -= Time.deltaTime * _currentVelocity * _airDrag;
+
                 _currentVelocity = Vector3.ClampMagnitude(_currentVelocity, _maxSpeed);
             }
 
